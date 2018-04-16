@@ -1,5 +1,7 @@
 # ember-cli-navigator
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/onehilltech/ember-cli-navigator.svg)](https://greenkeeper.io/)
+
 This README outlines the details of collaborating on this Ember addon.
 
 ## Installation
