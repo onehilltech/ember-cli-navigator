@@ -1,43 +1,28 @@
-import Ember from 'ember';
-
+import Service from '@ember/service';
 
 /**
  * Wrapper class for the watch id returned from navigator.geolocation.watchPosition. The
  * PositionWatcher class makes to easy to manage the watch.
  */
-const PositionWatcher = Ember.Object.extend({
-  clear () {
-    this.get ('geolocation').clearWatch (this.get ('watchId'));
+class PositionWatcher {
+  constructor (watchId) {
+    this.watchId = watchId;
   }
-});
 
-export default Ember.Service.extend({
-  /**
-   * Initialize the service.
-   */
-  init () {
-    this._super (...arguments);
+  clear () {
+    navigator.geolocation.clearWatch (this.watchId);
+  }
+}
 
-    this.set ('_instance', navigator.geolocation);
-  },
-
-  /**
-   * Test if the client support geolocation.
-   */
-  isSupported: Ember.computed ('_instance', function () {
-    return !Ember.isEmpty (this.get ('_instance'));
-  }),
-
+export default class GeolocationService extends Service {
   /**
    * Get the current position.
    *
    * @param opts
    */
   getCurrentPosition (opts) {
-    return new Ember.RSVP.Promise (function (resolve, reject) {
-      this.get ('_instance').getCurrentPosition (resolve, reject, opts);
-    }.bind (this));
-  },
+    return new Promise ((resolve, reject) => navigator.geolocation.getCurrentPosition (resolve, reject, opts));
+  }
 
   /**
    * Watch for changes to the current position.
@@ -47,13 +32,7 @@ export default Ember.Service.extend({
    * @param opts
    */
   watchPosition (success, failure, opts) {
-    let geolocation = this.get ('_instance');
-    let watchId = geolocation.watchPosition (success, failure, opts);
-
-    return PositionWatcher.create ({
-      watchId: watchId,
-      options: opts,
-      geolocation: geolocation
-    });
+    let watchId = navigator.geolocation.watchPosition (success, failure, opts);
+    return new PositionWatcher (watchId);
   }
-});
+}
